@@ -1,0 +1,9 @@
+import lightgbm as lgb
+import joblib
+
+# X, y は学習用のDataFrameとターゲット（売変合計率）
+model = lgb.LGBMRegressor()
+model.fit(X, y)
+
+# 保存
+joblib.dump(model, "models/discount_model.lgb")
