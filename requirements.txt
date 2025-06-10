@@ -7,3 +7,4 @@ jpholiday
 lightgbm
 joblib
 scikit-learn
+python-multipart
