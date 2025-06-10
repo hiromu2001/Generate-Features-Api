@@ -26,7 +26,7 @@ def preprocess_excel_or_csv(file_path: str) -> pd.DataFrame:
     if ext == ".csv":
         df = pd.read_csv(file_path, encoding="utf-8")
     else:
-        df = pd.read_excel(file_path, header=1)
+        df = pd.read_excel(file_path, header=0)
 
     # ✅ 列名をすべて文字列に変換（int型列名エラー防止）
     df.columns = df.columns.map(str)
