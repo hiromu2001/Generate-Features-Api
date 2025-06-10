@@ -99,6 +99,7 @@ class PredictRequest(BaseModel):
 @app.post("/upload")
 def upload_file(file: UploadFile = File(...)):
     global data_df
+    print("✅ /upload にリクエストが届いた")
     try:
         print("▶ アップロード開始")
 
