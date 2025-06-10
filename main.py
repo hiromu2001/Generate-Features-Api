@@ -28,10 +28,22 @@ def preprocess_excel_or_csv(file_path: str) -> pd.DataFrame:
     else:
         df = pd.read_excel(file_path, header=1)
 
+    # ✅ 列名をすべて文字列に変換（int型列名エラー防止）
+    df.columns = df.columns.map(str)
+
+    # ✅ ログ出力：列名確認（Renderログでデバッグ用）
+    print("▶ 読み込んだ列名:", df.columns.tolist())
+
+    # C〜E列削除（index 2, 3, 4）
     df.drop(columns=df.columns[2:5], inplace=True)
+
+    # 商品名が欠損している行は削除
     df = df[df[df.columns[1]].notna()]
+
+    # 列名リネーム（先頭2列）
     df.rename(columns={df.columns[0]: "商品コード", df.columns[1]: "商品名"}, inplace=True)
 
+    # ==== 各項目の縦持ち化 ====
     def melt_and_clean(cols, value_name):
         d = pd.melt(df, id_vars=["商品コード", "商品名"], value_vars=cols, var_name="日付_raw", value_name=value_name)
         d["日付"] = d["日付_raw"].str.extract(r'(\d{4}年\d{2}月\d{2}日)')[0]
@@ -42,15 +54,20 @@ def preprocess_excel_or_csv(file_path: str) -> pd.DataFrame:
     df_amt = melt_and_clean([c for c in df.columns if "販売金額" in c], "販売金額")
     df_rate = melt_and_clean([c for c in df.columns if "売変合計率" in c], "売変合計率")
 
+    # 結合
     merged = df_qty.merge(df_amt, on=["商品コード", "商品名", "日付"])\
                    .merge(df_rate, on=["商品コード", "商品名", "日付"])
+
+    # 日付欠損除外
     merged.dropna(subset=["日付"], inplace=True)
 
+    # 欠損処理
     merged["販売数量"].fillna(0, inplace=True)
     merged["販売金額"].fillna(0, inplace=True)
     merged["売変合計率"].fillna(merged["売変合計率"].mean(), inplace=True)
 
     return merged
+
 
 # ==== 特徴量生成 ====
 def generate_features(df: pd.DataFrame, item: Union[str, int], date: str, quantity: int) -> pd.DataFrame:
