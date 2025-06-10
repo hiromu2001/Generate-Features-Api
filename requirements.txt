@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+numpy
+openpyxl
+jpholiday
+lightgbm
+joblib
+scikit-learn
