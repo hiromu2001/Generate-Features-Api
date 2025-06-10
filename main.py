@@ -99,27 +99,23 @@ class PredictRequest(BaseModel):
 @app.post("/upload")
 def upload_file(file: UploadFile = File(...)):
     global data_df
+    print("[アップロード処理開始] ファイル名:", file.filename)
     try:
-        print(f"▶ ファイル名: {file.filename}")
+        # 保存処理
         path = os.path.join(UPLOAD_DIR, file.filename)
-
         with open(path, "wb") as f:
-            f.write(file.file.read())
+            content = file.file.read()
+            print("[読み込みバイト数]:", len(content))
+            f.write(content)
+        print("[保存完了] パス:", path)
 
-        print(f"▶ 保存完了: {path}")
-
+        # 前処理
         data_df = preprocess_excel_or_csv(path)
-
-        print("▶ 前処理後のデータ数:", len(data_df))
-        print("▶ カラム一覧:", data_df.columns.tolist())
-        print("▶ 先頭5行:\n", data_df.head())
-
+        print("[前処理完了] 行数:", len(data_df))
         return {"message": "アップロードと前処理が完了しました。"}
-
     except Exception as e:
-        print("❌ アップロード時エラー:", e)
-        return {"error": f"アップロード処理中にエラーが発生しました: {str(e)}"}
-
+        print("[❌ アップロード時エラー]:", e)
+        return {"error": str(e)}
 
 @app.post("/predict")
 def predict(req: PredictRequest):
