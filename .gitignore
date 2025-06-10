@@ -1,0 +1,18 @@
+# Pythonキャッシュ
+__pycache__/
+*.pyc
+
+# IDE設定
+.vscode/
+.idea/
+
+# ログや一時ファイル
+*.log
+
+# モデル・アップロードファイル（Git管理不要）
+uploaded/
+models/
+
+# Mac / Windows 特有ファイル
+.DS_Store
+Thumbs.db
